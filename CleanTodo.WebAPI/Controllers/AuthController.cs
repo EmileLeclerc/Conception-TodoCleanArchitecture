@@ -1,19 +1,7 @@
-using CleanTodo.Domain.DTOS;
-using Microsoft.AspNetCore.Mvc;
-
-[ApiController]
-[Route("api/[controller]")]
-public class AuthController : ControllerBase
+﻿// routes /register /login
+namespace CleanTodo.API.Controllers
 {
-
-    public AuthController()
+    public class AuthController
     {
-    }
-
-    [HttpPost]
-    public bool Login([FromBody] LoginDto loginDto)
-    {
-        return loginDto.Username == "root" && loginDto.Password == "root";
-        Response.Cookies.Append("accessToken", "yes");
     }
 }

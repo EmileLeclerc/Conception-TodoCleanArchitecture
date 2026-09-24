@@ -1,6 +1,7 @@
 
 // Program.cs
 using CleanTodo.Application;
+using CleanTodo.Application.UseCase;
 using CleanTodo.Infrastructure;
 
 public class Program
@@ -21,6 +22,7 @@ public class Program
         // Add Swagger/OpenAPI
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
+        builder.Services.AddScoped<CreateUseCase>();
 
         var app = builder.Build();
 

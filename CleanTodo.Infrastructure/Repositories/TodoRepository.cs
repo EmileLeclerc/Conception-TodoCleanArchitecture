@@ -27,7 +27,32 @@ public class TodoRepository : ITodoRepository
     public async Task<Todo?> FindById(Guid id)
     {
         return await _context.Todos
-            .Where(x => x.Id == id)
+            
             .SingleOrDefaultAsync();
+    }
+
+    public async Task<Todo?> Delete(Guid id)
+    {
+        Todo? x = null;
+        await _context.Todos.Where(x => x.Id == id).ExecuteDeleteAsync();
+        await _context.SaveChangesAsync();
+        return x;
+    }
+
+    public async Task<Todo?> ToggleCompleted(Guid id)
+    {
+        Todo? x = null;
+        if(FindById(id).IsCompleted)
+        await _context.Todos
+            .Where(x => x.Id == id)
+            .ExecuteUpdateAsync(setters => setters
+                .SetProperty(u => u.IsCompleted, false));
+        else
+        await _context.Todos
+            .Where(x => x.Id == id)
+            .ExecuteUpdateAsync(setters => setters
+                .SetProperty(u => u.IsCompleted, true));
+        await _context.SaveChangesAsync();
+        return x;
     }
 }

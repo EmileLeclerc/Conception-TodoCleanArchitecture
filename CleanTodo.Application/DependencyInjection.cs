@@ -1,5 +1,4 @@
 ﻿using CleanTodo.Application.UseCase;
-using CleanTodo.Domain.UseCase;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
@@ -12,8 +11,8 @@ public static class DependencyInjection
     {
         // cette ligne ajoute les validators
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
-        services.AddScoped<CreateTodoUseCase>();
-        services.AddScoped<DeleteTodoUseCase>();
+        services.AddScoped<CreateUseCase>();
+        services.AddScoped<DeleteUseCase>();
         services.AddScoped<GetTodoUseCase>();
         services.AddScoped<GetAllTodosUseCase>();
         services.AddScoped<ToggleTodoCompleteStatusUseCase>();
