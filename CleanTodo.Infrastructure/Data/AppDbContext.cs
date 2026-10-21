@@ -8,9 +8,20 @@ public class AppDbContext : DbContext
     {
     }
     public DbSet<Todo> Todos { get; set; }
+    public DbSet<User> Users { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
+
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
+        modelBuilder.Entity<User>(entity =>
+        {
+            entity.HasKey(u => u.Id);
+            entity.Property(u => u.Username).IsRequired().HasMaxLength(100);
+            entity.HasIndex(u => u.Username).IsUnique();
+            entity.Property(u => u.PasswordHash).IsRequired();
+            entity.Property(u => u.Role).IsRequired().HasMaxLength(20);
+        });
     }
 }

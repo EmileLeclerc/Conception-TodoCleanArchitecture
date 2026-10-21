@@ -11,35 +11,38 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CleanTodo.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250905143303_AddUserTable")]
-    partial class AddUserTable
+    [Migration("20261019203622_AddUsers")]
+    partial class AddUsers
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.13")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+                .HasAnnotation("ProductVersion", "9.0.19")
+                .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+            MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
             modelBuilder.Entity("CleanTodo.Domain.Entities.Todo", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("CompletedOn")
+                        .HasColumnType("datetime(6)");
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime(6)");
 
                     b.Property<bool>("IsCompleted")
-                        .HasColumnType("bit");
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<string>("Text")
                         .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("varchar(200)");
 
                     b.HasKey("Id");
 
@@ -50,21 +53,29 @@ namespace CleanTodo.Infrastructure.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("char(36)");
 
-                    b.Property<string>("Password")
+                    b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("varchar(200)");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)");
 
                     b.Property<string>("Username")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("User");
+                    b.HasIndex("Username")
+                        .IsUnique();
+
+                    b.ToTable("Users");
                 });
 #pragma warning restore 612, 618
         }

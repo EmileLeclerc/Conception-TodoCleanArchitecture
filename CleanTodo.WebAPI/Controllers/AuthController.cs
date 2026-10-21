@@ -1,32 +1,108 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using CleanTodo.Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using Microsoft.Extensions.Configuration;
 using System.Text;
 
 [ApiController]
 [Route("api/[controller]")]
 
-public class AuthController(IConfiguration configuration) :ControllerBase
+public class AuthController(AppDbContext db, IConfiguration configuration) :ControllerBase
 {
+    private readonly AppDbContext _db = db;
     private readonly IConfiguration _configuration = configuration;
+    private readonly PasswordHasher<User> _passwordHasher = new();
 
-    
     [HttpPost("register")]
-//write some shit here idk man
+    public async Task<IActionResult> Register(
+    [FromBody] RegisterModel register)
+    {
+        var username = register.Username.Trim();
+
+        if (username.Length < 3 || username.Length > 100)
+        {
+            return BadRequest("Username must be between 3 and 100 characters.");
+        }
+
+        if (register.Password.Length < 12)
+        {
+            return BadRequest("Password must be at least 12 characters.");
+        }
+
+        var existingUser = await _db.Users
+          .AnyAsync(u => u.Username == username);
+
+        if (existingUser)
+        {
+            return Conflict("Username is already taken.");
+        }
+
+        var user = new User
+        {
+            Username = username,
+            Role = "User"
+        };
+
+        user.PasswordHash = _passwordHasher.HashPassword(
+          user,
+          register.Password
+        );
+
+        _db.Users.Add(user);
+        await _db.SaveChangesAsync();
+
+        return StatusCode(201, new
+        {
+            message = "Account created successfully.",
+            userId = user.Id,
+            username = user.Username
+        });
+    }
 
 
+    [AllowAnonymous]
     [HttpPost("login")]
-    public IActionResult Login([FromBody] LoginModel login)
+    public async Task<IActionResult> Login([FromBody] LoginModel login)
     {
 
-        if (login.Username == "admin" && login.Password == "password") // Replace with real validation
-        {
+        var username = login.Username.Trim();
 
-            var claims = new[]
+        var user = await _db.Users.SingleOrDefaultAsync(u => u.Username == username);
+
+        if (user == null)
+        {
+            return Unauthorized("Invalid username or password.");
+        }
+
+        var passwordResult = _passwordHasher.VerifyHashedPassword(
+          user,
+          user.PasswordHash,
+          login.Password
+        );
+
+        if (passwordResult == PasswordVerificationResult.Failed)
+        {
+            return Unauthorized("Invalid username or password.");
+        }
+
+        if (passwordResult == PasswordVerificationResult.SuccessRehashNeeded)
+        {
+            user.PasswordHash = _passwordHasher.HashPassword(
+              user,
+              login.Password
+            );
+
+            await _db.SaveChangesAsync();
+        }
+
+        var claims = new[]
             {
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Name, login.Username),
                 new Claim(ClaimTypes.Role, "User")
             };
@@ -50,9 +126,7 @@ public class AuthController(IConfiguration configuration) :ControllerBase
             {
                 token = new JwtSecurityTokenHandler().WriteToken(token)
             });
-        }
 
-        return Unauthorized();
     }
     [Authorize(Roles = "User")]
     [HttpGet("dashboard")]
@@ -66,6 +140,12 @@ public class AuthController(IConfiguration configuration) :ControllerBase
     {
         return Ok("Welcome to the admin dashboard!");
     }
+}
+public class RegisterModel
+{
+    public string Username { get; set; } = string.Empty;
+
+    public string Password { get; set; } = string.Empty;
 }
 
 public class LoginModel

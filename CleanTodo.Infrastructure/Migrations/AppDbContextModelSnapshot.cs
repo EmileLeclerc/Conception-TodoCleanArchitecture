@@ -27,6 +27,9 @@ namespace CleanTodo.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
+                    b.Property<DateTime>("CompletedOn")
+                        .HasColumnType("datetime(6)");
+
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime(6)");
 
@@ -49,19 +52,27 @@ namespace CleanTodo.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
-                    b.Property<string>("Password")
+                    b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("varchar(200)");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)");
 
                     b.Property<string>("Username")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("varchar(200)");
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("User");
+                    b.HasIndex("Username")
+                        .IsUnique();
+
+                    b.ToTable("Users");
                 });
 #pragma warning restore 612, 618
         }
