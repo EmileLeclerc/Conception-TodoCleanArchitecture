@@ -9,9 +9,6 @@ public class ShipController : ControllerBase
     [HttpGet]
     public IActionResult Get()
     {
-        return Ok(new
-        {
-            message = "pong"
-        });
+        return Content("pong");
     }
 }
