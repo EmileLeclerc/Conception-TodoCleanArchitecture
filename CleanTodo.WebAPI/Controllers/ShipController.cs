@@ -1,8 +1,8 @@
 ﻿
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-[Route("api/ship")]
 [ApiController]
+[Route("api/ship")]
 public class ShipController : ControllerBase
 {
 
@@ -15,7 +15,7 @@ public class ShipController : ControllerBase
         });
     }
 
-    [HttpGet("ping")]
+    [HttpGet("/api/ping")]
     public IActionResult Ping()
     {
         return Ok("pong");
