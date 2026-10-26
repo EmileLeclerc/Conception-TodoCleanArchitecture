@@ -9,6 +9,6 @@ public class ShipController : ControllerBase
     [HttpGet]
     public IActionResult Get()
     {
-        return Ok("pong");
+        return Ok("not pong");
     }
 }
