@@ -31,6 +31,18 @@ public class Program
                 Encoding.UTF8.GetBytes(jwtKey))
             };
         });
+        // Add Cors
+        builder.Services.AddCors(options => {
+            options.AddPolicy("AllowAll", policy => {
+                policy.AllowAnyOrigin()
+
+                .AllowAnyMethod()
+
+                .AllowAnyHeader();
+
+            });
+
+        });
 
         // Add Authorization
         builder.Services.AddAuthorization();
@@ -84,7 +96,7 @@ public class Program
             app.UseSwagger();
             app.UseSwaggerUI();
         }
-
+        app.UseCors("AllowAll");
         app.UseHttpsRedirection();
         app.UseAuthorization();
         app.MapControllers();
