@@ -85,7 +85,7 @@ public class Program
                 }
             });
         });
-        builder.Services.AddScoped<CreateUseCase>();
+        builder.Services.AddScoped<CreateTodoUseCase>();
 
         var app = builder.Build();
         app.UseAuthentication(); // Must come before UseAuthorization

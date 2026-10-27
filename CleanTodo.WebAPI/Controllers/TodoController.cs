@@ -6,12 +6,12 @@ using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
 [Route("api/[controller]")]
-public class TodoController(GetAllTodosUseCase getAllUseCase, GetTodoUseCase getTodoUseCase, CreateUseCase createUseCase, DeleteUseCase deleteUseCase, ToggleTodoCompleteStatusUseCase toggleTodoCompleteStatusUseCase) : ControllerBase
+public class TodoController(GetAllTodosUseCase getAllTodosUseCase, GetTodoUseCase getTodoUseCase, CreateTodoUseCase createTodoUseCase, DeleteTodoUseCase deleteTodoUseCase, ToggleTodoCompleteStatusUseCase toggleTodoCompleteStatusUseCase) : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<TodoDto>>> GetAll()
+    public async Task<ActionResult<IEnumerable<TodoDTO>>> GetAll()
     {
-        var todos = await getAllUseCase.Execute();
+        var todos = await getAllTodosUseCase.Execute();
         return Ok(todos);
     }
 
@@ -19,9 +19,9 @@ public class TodoController(GetAllTodosUseCase getAllUseCase, GetTodoUseCase get
 
 
     [HttpPost]
-    public async Task<ActionResult<TodoDto>> Create([FromBody] CreateTodoDTO createTodoDto)
+    public async Task<ActionResult<TodoDTO>> Create([FromBody] CreateTodoDTO createTodoDTO)
     {
-        TodoDto todo = await createUseCase.Execute(createTodoDto);
+        TodoDTO todo = await createTodoUseCase.Execute(createTodoDTO);
 
         return CreatedAtAction(
             nameof(Get),
@@ -34,7 +34,7 @@ public class TodoController(GetAllTodosUseCase getAllUseCase, GetTodoUseCase get
     {
         try
         {
-            TodoDto todo = await getTodoUseCase.Execute(id);
+            TodoDTO todo = await getTodoUseCase.Execute(id);
             return Ok(todo);
         }
         catch (NotFoundException)
@@ -48,7 +48,7 @@ public class TodoController(GetAllTodosUseCase getAllUseCase, GetTodoUseCase get
     {
         try
         {
-            TodoDto todo = await deleteUseCase.Execute(id);
+            TodoDTO todo = await deleteTodoUseCase.Execute(id);
             return Ok(todo);
         }
         catch (NotFoundException)
@@ -62,7 +62,7 @@ public class TodoController(GetAllTodosUseCase getAllUseCase, GetTodoUseCase get
     {
         try
         {
-            TodoDto todo = await toggleTodoCompleteStatusUseCase.Execute(id);
+            TodoDTO todo = await toggleTodoCompleteStatusUseCase.Execute(id);
             return Ok(todo);
         }
         catch (NotFoundException)

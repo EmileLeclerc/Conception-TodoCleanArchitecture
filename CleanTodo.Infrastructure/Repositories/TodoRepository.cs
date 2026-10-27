@@ -11,7 +11,7 @@ public class TodoRepository : ITodoRepository
     {
         _context = context;
     }
-
+    
     public async Task<List<Todo>> GetAll()
     {
         return await _context.Todos.ToListAsync();
@@ -28,7 +28,7 @@ public class TodoRepository : ITodoRepository
     {
         return await _context.Todos
             
-            .SingleOrDefaultAsync();
+            .SingleOrDefaultAsync(s => s.Id == id);
     }
 
     public async Task<Todo?> Delete(Guid id)

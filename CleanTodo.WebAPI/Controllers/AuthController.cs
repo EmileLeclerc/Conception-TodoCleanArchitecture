@@ -143,8 +143,8 @@ public class AuthController(AppDbContext db, IConfiguration configuration) :Cont
 }
 public class RegisterModel
 {
-    public string Username { get; set; } = string.Empty;
-    public string Password { get; set; } = string.Empty;
+    public string Username { get; set; }
+    public string Password { get; set; }
 }
 
 public class LoginModel

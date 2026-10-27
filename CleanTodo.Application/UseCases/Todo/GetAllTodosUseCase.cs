@@ -12,9 +12,9 @@ public class GetAllTodosUseCase
         _todoRepository = todoRepository;
     }
 
-    public async Task<IList<TodoDto>> Execute()
+    public async Task<IList<TodoDTO>> Execute()
     {
         var todos = await _todoRepository.GetAll();
-        return todos.Select(x => new TodoDto(x)).ToList();
+        return todos.Select(x => new TodoDTO(x)).ToList();
     }
 }

@@ -22,7 +22,7 @@ public static class DependencyInjection
 
         // Register Repositories
         services.AddScoped<ITodoRepository, TodoRepository>();
-
+        services.AddScoped<IShipRepository, ShipRepository>();
         return services;
     }
 }

@@ -14,13 +14,13 @@ public class ToggleTodoCompleteStatusUseCase
         _todoRepository = todoRepository;
     }
 
-    public async Task<TodoDto> Execute(Guid id)
+    public async Task<TodoDTO> Execute(Guid id)
     {
         Todo? todo = await _todoRepository.ToggleCompleted(id);
         if (todo == null)
         {
             throw new NotFoundException(id);
         }
-        return new TodoDto(todo);
+        return new TodoDTO(todo);
     }
 }

@@ -2,18 +2,18 @@
 
 namespace CleanTodo.Domain.DTOS;
 
-public class TodoDto
+public class TodoDTO
 {
     public Guid Id { get; set; }
     public string Title { get; set; }
     public bool IsCompleted { get; set; }
     public DateTime Date { get; set; }
 
-    public TodoDto() { }
+    public TodoDTO() { }
 
 
     // Devrait être fait dans Mapping -> automapper.
-    public TodoDto(Todo todo)
+    public TodoDTO(Todo todo)
     {
 
         Id = todo.Id;
