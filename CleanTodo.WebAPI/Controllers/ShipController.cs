@@ -11,29 +11,34 @@ using Microsoft.AspNetCore.Mvc;
 public class ShipController(GetAllUseCase getAllUseCase, GetUseCase getUseCase, CreateUseCase createUseCase, DeleteUseCase deleteUseCase) : ControllerBase
 {
 
+
     [HttpPost("dock")]
-    public IActionResult Dock([FromBody] ShipDTO ship)
+    public async Task<ActionResult<ShipDTO>> Dock([FromBody] CreateShipDTO createShipDTO)
     {
-        if (ship.Status != "sailing")
+        if (createShipDTO.Status != "sailing")
         {
             return BadRequest(new
             {
-                error = "A ship entering port must have status 'sailing'."
+                error = "this ship is not sailing what"
             });
         }
 
-        return Ok(new
-        {
-            message = "Ship docked successfully",
-            ship
-        });
+        ShipDTO ship = await createUseCase.Execute(createShipDTO);
+
+        return CreatedAtAction(
+            nameof(Get),
+            new { id = ship.Id },
+            ship);
+    
     }
+
     [HttpGet("getall")]
     public async Task<ActionResult<IEnumerable<ShipDTO>>> GetAll()
     {
         var ships = await getAllUseCase.Execute();
         return Ok(ships);
     }
+
     [HttpPost("create")]
     public async Task<ActionResult<ShipDTO>> Create([FromBody] CreateShipDTO createShipDTO)
     {
