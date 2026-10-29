@@ -1,4 +1,5 @@
-﻿
+﻿using System.Net.Http.Headers;
+using System.Text.Json;
 using CleanTodo.Application.UseCase;
 using CleanTodo.Domain.DTOs;
 using CleanTodo.Domain.DTOS;
@@ -30,7 +31,7 @@ public class ShipController(GetAllUseCase getAllUseCase, GetUseCase getUseCase, 
             nameof(Get),
             new { id = ship.Id },
             ship);
-    
+
     }
 
     [HttpGet("getall")]
@@ -100,10 +101,9 @@ public class ShipController(GetAllUseCase getAllUseCase, GetUseCase getUseCase, 
     }
 
     [HttpGet("broker-users")]
-    public async Task<IActionResult> GetBrokerUsers(
-      [FromServices] IHttpClientFactory httpClientFactory)
+    public async Task<IActionResult> GetBrokerUsers([FromServices] IHttpClientFactory httpClientFactory)
     {
-        using var client = httpClientFactory.CreateClient("Broker");
+        var client = httpClientFactory.CreateClient("Broker");
 
         var clientId = configuration["Broker:AppId"];
         var appToken = configuration["Broker:AppSecret"];
@@ -117,17 +117,15 @@ public class ShipController(GetAllUseCase getAllUseCase, GetUseCase getUseCase, 
             });
         }
 
-        using var request = new HttpRequestMessage(
+        var request = new HttpRequestMessage(
           HttpMethod.Get,
           "/api/users");
 
         request.Headers.Add("x-client-id", clientId);
         request.Headers.Authorization =
-          new System.Net.Http.Headers.AuthenticationHeaderValue(
-            "Bearer",
-            appToken);
+          new AuthenticationHeaderValue("Bearer",appToken);
 
-        using var response = await client.SendAsync(request);
+        var response = await client.SendAsync(request);
         var body = await response.Content.ReadAsStringAsync();
 
         return StatusCode((int)response.StatusCode, new
@@ -137,4 +135,71 @@ public class ShipController(GetAllUseCase getAllUseCase, GetUseCase getUseCase, 
         });
     }
 
+    [HttpPost("sail/{user}/{id:guid}/")]
+    public async Task<IActionResult> Sail(Guid id, string user, [FromServices] IHttpClientFactory httpClientFactory)
+    {
+
+        var appId = configuration["Broker:AppId"];
+        var appSecret = configuration["Broker:AppSecret"];
+
+        if (string.IsNullOrEmpty(appId) ||
+            string.IsNullOrEmpty(appSecret))
+        {
+            return StatusCode(500, new
+            {
+                error = "no appid or secret"
+            });
+        }
+
+        if (string.IsNullOrEmpty(user))
+        {
+            return StatusCode(500, new { error = "no user to sail to" });
+        }
+
+        var client = httpClientFactory.CreateClient("Broker");
+
+        var request = new HttpRequestMessage(
+          HttpMethod.Get,
+          "/api/users");
+
+        request.Headers.Add("x-client-id", appId);
+        request.Headers.Authorization =
+          new AuthenticationHeaderValue("Bearer",appSecret);
+
+        var usersResponse = await client.SendAsync(request);
+        var usersBody = await usersResponse.Content.ReadAsStringAsync();
+        ShipDTO? ship;
+        try
+        {
+             ship = await getUseCase.Execute(id);
+        }
+        catch (NotFoundException)
+        {
+            return NotFound();
+        }
+
+        var outgoingShip = new SendShipDTO(ship);
+
+        using var sendRequest = new HttpRequestMessage(
+          HttpMethod.Post,
+          $"/api/ship/sail/{Uri.EscapeDataString(user)}");
+
+        sendRequest.Headers.Add("x-client-id", appId);
+        sendRequest.Headers.Authorization =
+          new AuthenticationHeaderValue("Bearer", appSecret);
+
+        sendRequest.Content = new StringContent(
+          JsonSerializer.Serialize(outgoingShip,
+            new JsonSerializerOptions(JsonSerializerDefaults.Web)),
+          System.Text.Encoding.UTF8,
+          "application/json");
+        using var Response = await client.SendAsync(sendRequest);
+        var sendBody = await Response.Content.ReadAsStringAsync();
+
+        return StatusCode((int)Response.StatusCode, new
+        {
+            brokerStatus = (int)Response.StatusCode,
+            brokerResponse = sendBody
+        });
+    }
 }
