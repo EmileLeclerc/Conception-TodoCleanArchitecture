@@ -19,7 +19,12 @@ public static class DependencyInjection
                 ServerVersion.AutoDetect(connectionString),
                 b => b.MigrationsAssembly(typeof(AppDbContext).Assembly.FullName)
         ));
-
+        services.AddHttpClient("Broker", client =>
+        {
+            client.BaseAddress = new Uri(
+              configuration["Broker:BaseUrl"]
+                ?? throw new InvalidOperationException("Broker URL is missing"));
+        });
         // Register Repositories
         services.AddScoped<ITodoRepository, TodoRepository>();
         services.AddScoped<IShipRepository, ShipRepository>();

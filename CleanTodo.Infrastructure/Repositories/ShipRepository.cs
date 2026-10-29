@@ -1,4 +1,5 @@
-﻿using CleanTodo.Domain.Entities;
+﻿using CleanTodo.Domain.DTOs;
+using CleanTodo.Domain.Entities;
 using CleanTodo.Domain.Interfaces.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -37,5 +38,27 @@ public class ShipRepository : IShipRepository
         await _context.SaveChangesAsync();
         return x;
     }
+    public async Task<Ship?> Edit(Guid id, Ship ship)
+    {
+        Ship? existingShip = await _context.Ships
+          .SingleOrDefaultAsync(s => s.Id == id);
+
+        if (existingShip == null)
+        {
+            return null;
+        }
+
+        existingShip.Name = ship.Name;
+        existingShip.GoldCargo = ship.GoldCargo;
+        existingShip.Captain = ship.Captain;
+        existingShip.Status = ship.Status;
+        existingShip.CrewSize = ship.CrewSize;
+        existingShip.LastModified = DateTime.UtcNow;
+
+        await _context.SaveChangesAsync();
+
+        return existingShip;
+    }
+
 }
 

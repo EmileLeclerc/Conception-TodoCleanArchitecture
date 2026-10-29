@@ -15,6 +15,8 @@ public static class DependencyInjection
         services.AddScoped<DeleteUseCase>();
         services.AddScoped<GetAllUseCase>();
         services.AddScoped<GetUseCase>();
+        services.AddScoped<EditUseCase>();
+
 
         services.AddScoped<CreateTodoUseCase>();
         services.AddScoped<DeleteTodoUseCase>();
