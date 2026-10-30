@@ -21,7 +21,7 @@ public class ShipDTO
 
     public string CreatedBy { get; set; }
 
-    public DateTime LastModified { get; set; } = DateTime.Now;
+    public DateTime LastModified { get; set; }
 
     public ShipDTO(Ship ship)
     {
@@ -33,6 +33,7 @@ public class ShipDTO
         Status = ship.Status;
         CrewSize = ship.CrewSize;
         CreatedBy = ship.CreatedBy;
+        LastModified = ship.LastModified;
     }
     public ShipDTO() { }
 }

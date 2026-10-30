@@ -17,7 +17,7 @@ public class CreateUseCase
 
     public async Task<ShipDTO> Execute(CreateShipDTO createShipDTO)
     {
-        Ship shipToCreate = new Ship(createShipDTO.Name, createShipDTO.GoldCargo, createShipDTO.CreatedAt,createShipDTO.Captain,  createShipDTO.Status, createShipDTO.CrewSize, createShipDTO.CreatedBy);
+        Ship shipToCreate = new Ship(createShipDTO.Name, createShipDTO.GoldCargo, DateTime.UtcNow, createShipDTO.Captain,  createShipDTO.Status, createShipDTO.CrewSize, createShipDTO.CreatedBy);
         Ship? ship = await _shipRepository.Add(shipToCreate);
         return new ShipDTO(ship);
     }

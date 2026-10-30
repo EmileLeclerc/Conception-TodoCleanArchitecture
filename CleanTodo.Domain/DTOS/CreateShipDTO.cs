@@ -7,7 +7,6 @@ public class CreateShipDTO
 {
     public string Name { get; set; }
     public int GoldCargo { get; set; }
-    public DateTime CreatedAt { get; set; }
     public string Captain { get; set; }
     public string Status { get; set; }
     public int CrewSize { get; set; }
@@ -19,7 +18,6 @@ public class CreateShipDTO
     {
         Name = ship.Name;
         GoldCargo = ship.GoldCargo;
-        CreatedAt = ship.CreatedAt;
         Captain = ship.Captain;
         Status = ship.Status;
         CrewSize = ship.CrewSize;
