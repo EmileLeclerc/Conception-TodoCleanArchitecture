@@ -13,7 +13,6 @@ using Microsoft.AspNetCore.Mvc;
 public class ShipController(GetAllUseCase getAllUseCase, GetUseCase getUseCase, CreateUseCase createUseCase, DeleteUseCase deleteUseCase, EditUseCase editUseCase, IConfiguration configuration) : ControllerBase
 {
 
-
     [HttpPost("dock")]
     public async Task<ActionResult<ShipDTO>> Dock([FromBody] CreateShipDTO createShipDTO)
     {
@@ -33,14 +32,14 @@ public class ShipController(GetAllUseCase getAllUseCase, GetUseCase getUseCase, 
             ship);
 
     }
-
+    [Authorize(Roles = "User")]
     [HttpGet("getall")]
     public async Task<ActionResult<IEnumerable<ShipDTO>>> GetAll()
     {
         var ships = await getAllUseCase.Execute();
         return Ok(ships);
     }
-
+    [Authorize(Roles = "User")]
     [HttpPost("create")]
     public async Task<ActionResult<ShipDTO>> Create([FromBody] CreateShipDTO createShipDTO)
     {
@@ -51,7 +50,7 @@ public class ShipController(GetAllUseCase getAllUseCase, GetUseCase getUseCase, 
             new { id = ship.Id },
             ship);
     }
-
+    [Authorize(Roles = "User")]
     [HttpGet("get/{id:guid}")]
     public async Task<IActionResult> Get(Guid id)
     {
@@ -65,7 +64,7 @@ public class ShipController(GetAllUseCase getAllUseCase, GetUseCase getUseCase, 
             return NotFound();
         }
     }
-
+    [Authorize(Roles = "User")]
     [HttpDelete("delete/{id:guid}")]
     public async Task<IActionResult> Delete(Guid id)
     {
@@ -79,7 +78,7 @@ public class ShipController(GetAllUseCase getAllUseCase, GetUseCase getUseCase, 
             return NoContent();
         }
     }
-
+    [Authorize(Roles = "User")]
     [HttpPatch("edit/{id:guid}")]
     public async Task<IActionResult> Edit(Guid id, Ship ship)
     {
@@ -93,13 +92,13 @@ public class ShipController(GetAllUseCase getAllUseCase, GetUseCase getUseCase, 
             return NoContent();
         }
     }
-
+    [Authorize(Roles = "User")]
     [HttpGet("/api/ping")]
     public IActionResult Ping()
     {
         return Ok("pong");
     }
-
+    [Authorize(Roles = "User")]
     [HttpGet("broker-users")]
     public async Task<IActionResult> GetBrokerUsers([FromServices] IHttpClientFactory httpClientFactory)
     {
@@ -134,7 +133,7 @@ public class ShipController(GetAllUseCase getAllUseCase, GetUseCase getUseCase, 
             brokerResponse = body
         });
     }
-
+    [Authorize(Roles = "User")]
     [HttpPost("sail/{user}/{id:guid}/")]
     public async Task<IActionResult> Sail(Guid id, string user, [FromServices] IHttpClientFactory httpClientFactory)
     {
