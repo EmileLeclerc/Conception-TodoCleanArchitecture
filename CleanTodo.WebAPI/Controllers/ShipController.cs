@@ -92,7 +92,6 @@ public class ShipController(GetAllUseCase getAllUseCase, GetUseCase getUseCase, 
             return NoContent();
         }
     }
-    [Authorize(Roles = "User")]
     [HttpGet("/api/ping")]
     public IActionResult Ping()
     {
